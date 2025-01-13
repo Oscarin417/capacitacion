@@ -1,0 +1,124 @@
+{% load static %}
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="{% url 'home' %}" class="brand-link">
+      <span class="brand-text font-weight-light">Punto de Venta</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          {% with usuario=user.usuario_set.first %}
+            {% if usuario.imagen %}
+            <img src="{{usuario.imagen.url}}" class="img-circle elevation-2" alt="User Image">
+            {% else %}
+            <img src="{% static "images/perfil.jpeg" %}" class="img-circle elevation-2" alt="User Image">
+            {% endif %}
+          {% endwith %}
+        </div>
+        <div class="info">
+          <a href="{% url 'perfil' %}" class="d-block">{{request.user.username}}</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        {% with usuario=user.usuario_set.first %}
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="{% url 'home' %}" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Dashboard
+              </p>
+            </a>
+          </li>
+          {% if usuario.rol == 1 %}
+          <li class="nav-item">
+            <a href="{% url 'negocios' %}" class="nav-link">
+              <i class="nav-icon fas fa-building"></i>
+              <p>
+                Negocios
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="{% url 'marcas' %}" class="nav-link">
+              <i class="nav-icon fas fa-tags"></i>
+              <p>
+                Marcas
+              </p>
+            </a>
+          </li>
+          {% if usuario.rol == 1 %}
+          <li class="nav-item">
+            <a href="{% url 'clientes' %}" class="nav-link">
+              <i class="nav-icon fa fa-user-alt"></i>
+              <p>
+                Clientes
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="{% url 'cajas' %}" class="nav-link">
+              <i class="nav-icon fa fa-cash-register"></i>
+              <p>
+                Cajas
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'departamentos' %}" class="nav-link">
+              <i class="nav-icon fas fa-building"></i>
+              <p>
+                Departamentos
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'medidas' %}" class="nav-link">
+              <i class="nav-icon fas fa-ruler"></i>
+              <p>
+                Medidas
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'productos' %}" class="nav-link">
+              <i class="nav-icon fas fa-dollar-sign"></i>
+              <p>
+                Productos
+              </p>
+            </a>
+          </li>
+          {% if usuario.rol == 1 %}
+          <li class="nav-item">
+            <a href="{% url 'usuarios' %}" class="nav-link">
+              <i class="nav-icon fa fa-user-tie"></i>
+              <p>
+                Usuarios 
+              </p>
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a href="{% url 'ventas' %}" class="nav-link">
+              <i class="nav-icon fa fa-store-alt"></i>
+              <p>
+                Detalle venta
+              </p>
+            </a>
+          </li>
+        </ul>
+        {% endwith %}
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>

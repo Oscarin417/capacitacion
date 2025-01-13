@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block titulo %}
+Usuarios
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <a href="{% url 'usuario_crear' %}" class="btn btn-primary">
+          <i class="fa fa-plus"></i>
+          Agregar usuario
+        </a>
+      </div>
+      <div class="card-body">
+        <table id="lista" class="table table-bordered table-hover table-dark">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre(s)</th>
+              <th>Apellidos</th>
+              <th>Genero</th>
+              <th>Rol</th>
+              <th>Correo</th>
+              <th>Usuario</th>
+              <th>Imagen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in usuarios %}
+            <tr>
+              <td>{{u.id}}</td>
+              <td>{{u.nombres}}</td>
+              <td>{{u.apellidos}}</td>
+              <td>{{u.generos}}</td>
+              <td>{{u.roles}}</td>
+              <td>{{u.contacto.correo}}</td>
+              <td>{{u.user.username}}</td>
+              <td>
+                {% if u.imagen %}
+                <img src="{{u.imagen.url}}" alt="{{u.user.username}}" width="50px;">
+                {% else %}
+                {{u.user.username}}
+                {% endif %}
+              </td>
+              <td>
+                <div class="btn-group">
+                  <a href="{% url 'usuario_editar' u.id %}" class="btn btn-warning">
+                    <i class="fas fa-pencil-alt"></i>
+                  </a>
+                  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </td>
+            </tr> 
+            <!--modal-->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="model-title">Eliminar registro</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Una vez eliminado el registro no se podra recuperar</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form action="{% url 'usuario_eliminar' u.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class='btn btn-success'>Enviar</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end modal-->
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
+{% block js %}
+<script>
+  $(document).ready(function (){
+    $("#lista").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      language: {
+            url: "//cdn.datatables.net/plug-ins/2.2.0/i18n/es-MX.json"
+      },
+    })
+  })
+</script>
+{% endblock js %}

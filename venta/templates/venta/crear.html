@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block titulo %}
+Crear venta
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <!--{% if not request.session.caja_abierta %}-->
+        <!--  <p>Debe existir una caja abierta para crear la venta</p>-->
+        <!--{% else %}-->
+        <!--  <div class="mb-3">-->
+        <!--    <label for="cliente" class="form-label">Cliente</label>-->
+        <!--    <input type="text" name="cliente" class="form-control">-->
+        <!--  </div>-->
+        <!--  <div class="mb-3">-->
+        <!--    <label for="producto" class="form-label">Producto</label>-->
+        <!--    <input type="text" name="producto" class="form-control">-->
+        <!--  </div>-->
+        <!--  <table class="table table-bordered table-hover table-dark">-->
+        <!--    <thead>-->
+        <!--      <th>Cantidad</th>-->
+        <!--      <th>Producto</th>-->
+        <!--      <th>Precio</th>-->
+        <!--      <th>Descuento</th>-->
+        <!--      <th>Acciones</th>-->
+        <!--    </thead>-->
+        <!--  </table>-->
+        <!--{% endif %}-->
+          <div class="mb-3">
+            <label for="cliente" class="form-label">Cliente</label>
+            <input type="text" name="cliente" class="form-control">
+            <input type="hidden" id="cliente_id">
+          </div>
+          <div class="mb-3">
+            <label for="producto" class="form-label">Producto</label>
+            <input type="text" id='producto' name="producto" class="form-control">
+            <input type="hidden" id="producto_id">
+          </div>
+          <table class="table table-bordered table-hover table-dark">
+            <thead>
+              <th>Cantidad</th>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Descuento</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody id="lista"></tbody>
+          </table>
+          <div class="row">
+            <div class="col-8"></div>
+            <div class="col-4">
+              <label for="descuento" class="form-label">Descuento:</label>
+              <input type="text" id="descuento" class="form-control" disabled>
+              <label for="subtotal" class="form-label">Subtotal:</label>
+              <input type="text" id="subtotal" class="form-control" disabled>
+              <label for="total" class="form-label">Total:</label>
+              <input type="text" id="total" class="form-control" disabled>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
+{% block js %}
+<script>
+ $(function (){
+   $("#producto").autocomplete({
+    source: "{% url 'autocomplete_producto' %}",
+    minLength: 1,
+    select: function(event, ui){
+      const id = ui.item.id
+      const nombre = ui.item.label
+      const precio = ui.item.precio
+      const existencia = ui.item.existencia
+
+      let producto = {
+        id: id,
+        nombre: nombre,
+        precio: precio,
+        existencia: existencia,
+        cantidad: 1
+      }
+
+      agregarProducto(producto)
+      calcularTotal()
+    }
+  })
+ })
+
+$(function () {
+  $("#cliente").autocomplete({
+    source: "{% url 'autocomplete_cliente' %}",
+    minLength: 1,
+    select: function(event, ui){
+      const id = ui.item.id
+      const nombres = ui.item.label
+
+      $("#cliente_id").val(id)
+    }
+  })
+})
+
+  const agregarProducto = (producto)=>{
+    $("#producto_id").val(producto.id)
+    const fila = $('<tr></tr>')
+    fila.append(`<td><input type="number" id="cantidad" value=${producto.cantidad} min=1 max=${producto.existencia}></td>`)
+    fila.append(`<td>${producto.nombre}</td>`)
+    fila.append(`<td id="precio">${producto.precio}</td>`)
+    fila.append(`<td><input id="descuento" value="0" type="number" min="0" max="100"></td>`)
+    fila.append(`<td><button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>`)
+
+    $("#lista").append(fila)
+  }
+  const calcularTotal = ()=>{
+    let subtotal = 0
+    let totaldescuento = 0
+    let total = 0
+    let descuento_producto
+    $("#lista").find('tr').each(function(index, element) {
+      const id = $(element).find('#producto_id').val()
+      const cantidad = $(element).find('#cantidad').val()
+      console.log(cantidad)
+      const precio = $(element).find('#precio').text()
+      console.log(precio)
+      const descuento = $(element).find('#descuento').val()
+      console.log(descuento)
+
+      descuento_producto = parseFloat(descuento/100)
+      if (descuento_producto != 0){
+        subtotal = parseFloat((cantidad*precio)*descuento_producto)
+        total = parseFloat(subtotal-decuento_producto)
+      }else{
+        subtotal = parseFloat(cantidad*precio)
+        total = subtotal
+      }
+      $("#total").val(total.toFixed(2))
+      $("#subtotal").val(subtotal.toFixed(2))
+      $("#descuento").val(descuento_producto)
+    });
+  }
+</script>
+{% endblock js %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block titulo %}
+Crear usuario
+{% endblock titulo %}
+
+{% block contenido %}
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información general</h3>
+        </div>
+        <div class="card-body">
+          {{ef|crispy}}
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información de contacto</h3>
+        </div>
+        <div class="card-body">
+          {{cf|crispy}}
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información de Usuario</h3>
+        </div>
+        <div class="card-body">
+          {{uf|crispy}}
+        </div>
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-success">
+    <i class="fas fa-check"></i>
+    Enviar
+  </button>
+  <a href="{% url 'usuarios' %}" class="btn btn-danger">
+    <i class="fas fa-times"></i>
+    Cancelar
+  </a>
+</form>
+{% endblock contenido %}

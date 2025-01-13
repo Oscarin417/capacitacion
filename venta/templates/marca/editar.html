@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+Editar marca
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <form method="post">
+      {% csrf_token %}
+      <div class="card">
+        <div class="card-body">
+          {{form|crispy}}
+        </div>
+      </div>
+      <button class="btn btn-success">
+        <i class="fa fa-check"></i>
+        Enviar
+      </button>
+      <a href="{% url 'marcas' %}" class="btn btn-danger">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock contenido %}

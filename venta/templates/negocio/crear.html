@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+Agregar Negocio
+{% endblock titulo %}
+
+{% block contenido %}
+<form method='post'>
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información del negocio</h3>
+        </div>
+        <div class="card-body">
+          {{nf|crispy}}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información de contacto</h3>
+        </div>
+        <div class="card-body">
+          {{cf|crispy}}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información fiscal</h3>
+        </div>
+        <div class="card-body">
+          {{ff|crispy}}
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Información del domicilio</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              {{df.pais|as_crispy_field}}
+            </div>
+            <div class="col-6">
+              {{df.estado|as_crispy_field}}
+            </div>
+            <div class="col-12">
+              {{df.municipio|as_crispy_field}}
+              {{df.colonia|as_crispy_field}}
+              {{df.calle|as_crispy_field}}
+            </div>
+            <div class="col-4">
+              {{df.cp|as_crispy_field}}
+            </div>
+            <div class="col-4">
+              {{df.ne|as_crispy_field}}
+            </div>
+            <div class="col-4">
+              {{df.ni|as_crispy_field}}
+            </div>
+            <div class="col-12">
+              {{df.referencia|as_crispy_field}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-success" type="submit">
+    <i class="fa fa-check"></i>
+    Agregar
+  </button>
+  <a href="{% url 'negocios' %}" class="btn btn-danger">
+    <i class="fas fa-times"></i>
+    Cancelar
+  </a>
+</form>
+{% endblock contenido %}

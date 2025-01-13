@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block titulo %}
+Marcas
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      {% if usuario.rol == 1 %}
+      <div class="card-header">
+        <a href="{% url 'caja_crear' %}" class="btn btn-primary">
+          <i class="fa fa-plus"></i>
+          Agregar caja
+        </a>
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <table id="lista" class="table table-bordered table-hover table-dark">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Clave</th>
+              <th>Nombre</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in cajas %}
+            <tr>
+              <td>{{c.id}}</td>
+              <td>{{c.clave}}</td>
+              <td>{{c.nombre}}</td>
+              <td>
+                <div class="btn-group">
+                  {% if usuario.rol == 1 %}
+                  <a href="{% url 'caja_editar' c.id %}" class="btn btn-warning">
+                    <i class="fas fa-pencil-alt"></i>
+                  </a>
+                  <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                  {% else %}
+                    {% if not request.session.caja_abierta %}
+                    <a href="{% url 'caja_abrir' c.id %}" class="btn btn-success">
+                      <i class="fas fa-box-open"></i>
+                    </a>
+                    {% elif request.session.caja_abierta and request.session.caja_abierta == c.id %}
+                    <a href="{% url 'caja_cerrar' %}" class="btn btn-danger">
+                      <i class="fas fa-box"></i>
+                    </a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </td>
+            </tr> 
+            <!--modal-->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="model-title">Eliminar registro</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Una vez eliminado el registro no se podra recuperar</p>
+                  </div>
+                  <div class="modal-footer">
+                    <form action="{% url 'caja_eliminar' c.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class='btn btn-success'>Enviar</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end modal-->
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
+{% block js %}
+<script>
+  $(document).ready(function (){
+    $("#lista").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      language: {
+            url: "//cdn.datatables.net/plug-ins/2.2.0/i18n/es-MX.json"
+      },
+    })
+  })
+</script>
+{% endblock js %}
