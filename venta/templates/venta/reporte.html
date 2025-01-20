@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block titulo %}
+Reportes
+{% endblock titulo %}
+
+{% block contenido %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Filtrar busqueda</h3>
+      </div>
+      <div class="card-body">
+        <form id="form">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-3">
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="form-group">
+                    <label for="fecha_inicio" class="form-label">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="caja" class="form-label">Caja</label>
+                <select name="caja" id="caja" class="form-control">
+                  <option value="">Seleccione una caja</option>
+                  {% for c in cajas %}
+                  <option value="{{c.id}}">{{c.nombre}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="usuario" class="form-label">Empleado</label>
+                <select name="usuario" id="usuario" class="form-control">
+                  <option value="">Seleccione un empleado</option>
+                  {% for u in usuarios %}
+                  <option value="{{u.id}}">{{u.nombres}} {{u.apellidos}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <label for="mp" class="form-label">Metodo de pago</label>
+                <select name="mp" id="mp" class="form-control">
+                  <option value="">Seleccione un metodo de pago</option>
+                  <option value="E">Efectivo</option>
+                  <option value="T">Transferencia</option>
+                  <option value="C">Tarjeta de credito</option>
+                  <option value="D">Tarjeta de debito</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-search"></i>
+            Buscar
+          </button>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <table id="lista" class="table table-bordered table-hover table-dark">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Fecha</th>
+              <th>Caja</th>
+              <th>Empleado</th>
+              <th>Cliente</th>
+              <th>SubTotal</th>
+              <th>Total</th>
+              <th>Metodo de pago</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in ventas %}
+            <tr>
+              <td>{{v.id}}</td>
+              <td>{{v.fecha}}</td>
+              <td>{{v.caja.nombre}}</td>
+              <td>{{v.empleado.nombres}}</td>
+              <td>{{v.cliente.nombres}}</td>
+              <td>${{v.total}}</td>
+              <td>${{v.total_descuento}}</td>
+              <td>{{v.metodo}}</td>
+            </tr> 
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock contenido %}
+{% block js %}
+<script>
+  $(document).ready(function (){
+    $("#lista").DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      language: {
+            url: "https://cdn.datatables.net/plug-ins/2.2.0/i18n/es-MX.json"
+      },
+    })
+    $("#form").submit(function(e) {
+      const csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+      const datos = {
+        'fecha_inicio': $("#fecha_inicio").val() || '',
+        'fecha_fin': $("#fecha_fin").val() || '',
+        'empleado': $("#usuario").val() || 0,
+        'caja': $("#caja").val() || 0,
+        'metodo': $("#mp").val() || ''
+      }
+      e.preventDefault()
+      $.ajax({
+        url: "{% url 'reporte' %}",
+        type: 'POST',
+        data: JSON.stringify(datos),
+        headers: {
+          "X-CSRFToken": csrftoken
+        },
+        dataType: 'json',
+        success: function(response) {
+          if (response.success){
+            $("#lista tbody").empty()
+            // console.log(response.ventas);
+            // $.each(response.ventas, function(indice, registro){
+            //   console.log(registro.fecha);
+            // })
+            response.ventas.map((venta, index) => { 
+              $("#lista tbody").append(`
+                <tr key=${index}>
+                  <td>${venta.id}</td>
+                  <td>${venta.fecha}</td>
+                  <td>${venta.caja}</td>
+                  <td>${venta.empleado}</td>
+                  <td>${venta.cliente}</td>
+                  <td>$${venta.total}</td>
+                  <td>$${venta.total_descuento}</td>
+                  <td>${venta.metodo_pago}</td>
+                </tr>
+              `);
+            });
+          }
+        }
+      })
+    });
+  })
+</script>
+{% endblock js %}

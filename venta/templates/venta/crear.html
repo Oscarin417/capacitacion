@@ -4,143 +4,282 @@ Crear venta
 {% endblock titulo %}
 
 {% block contenido %}
-<div class="row">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <!--{% if not request.session.caja_abierta %}-->
-        <!--  <p>Debe existir una caja abierta para crear la venta</p>-->
-        <!--{% else %}-->
-        <!--  <div class="mb-3">-->
-        <!--    <label for="cliente" class="form-label">Cliente</label>-->
-        <!--    <input type="text" name="cliente" class="form-control">-->
-        <!--  </div>-->
-        <!--  <div class="mb-3">-->
-        <!--    <label for="producto" class="form-label">Producto</label>-->
-        <!--    <input type="text" name="producto" class="form-control">-->
-        <!--  </div>-->
-        <!--  <table class="table table-bordered table-hover table-dark">-->
-        <!--    <thead>-->
-        <!--      <th>Cantidad</th>-->
-        <!--      <th>Producto</th>-->
-        <!--      <th>Precio</th>-->
-        <!--      <th>Descuento</th>-->
-        <!--      <th>Acciones</th>-->
-        <!--    </thead>-->
-        <!--  </table>-->
-        <!--{% endif %}-->
-          <div class="mb-3">
-            <label for="cliente" class="form-label">Cliente</label>
-            <input type="text" name="cliente" class="form-control">
-            <input type="hidden" id="cliente_id">
-          </div>
-          <div class="mb-3">
-            <label for="producto" class="form-label">Producto</label>
-            <input type="text" id='producto' name="producto" class="form-control">
-            <input type="hidden" id="producto_id">
-          </div>
-          <table class="table table-bordered table-hover table-dark">
-            <thead>
-              <th>Cantidad</th>
-              <th>Producto</th>
-              <th>Precio</th>
-              <th>Descuento</th>
-              <th>Acciones</th>
-            </thead>
-            <tbody id="lista"></tbody>
-          </table>
-          <div class="row">
-            <div class="col-8"></div>
-            <div class="col-4">
-              <label for="descuento" class="form-label">Descuento:</label>
-              <input type="text" id="descuento" class="form-control" disabled>
-              <label for="subtotal" class="form-label">Subtotal:</label>
-              <input type="text" id="subtotal" class="form-control" disabled>
-              <label for="total" class="form-label">Total:</label>
-              <input type="text" id="total" class="form-control" disabled>
+<form id="form">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          {% if not request.session.caja_abierta %}
+            <p>Debe existir una caja abierta para crear la venta</p>
+          {% else %}
+            <div class="mb-3">
+              <label for="cliente" class="form-label">Cliente</label>
+              <input type="text" id="cliente" class="form-control">
+              <input type="hidden" name="cliente_id" id="cliente_id">
             </div>
-          </div>
+            <div class="mb-3">
+              <label for="producto" class="form-label">Producto</label>
+              <input type="text" id="producto" class="form-control">
+            </div>
+            <table class="table table-bordered table-hover table-dark">
+              <thead>
+                <th>Cantidad</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Descuento</th>
+                <th>Acciones</th>
+              </thead>
+              <tbody id="lista"></tbody>
+            </table>
+            <div class="row">
+              <div class="col-8"></div>
+              <div class="col-4">
+                <label for="descuento" class="form-label">Descuento:</label>
+                <input type="text" id="descuento" class="form-control" readonly>
+                <label for="subtotal" class="form-label">Subtotal:</label>
+                <input type="text" name="subtotal" id="subtotal" class="form-control" readonly>
+                <label for="total" class="form-label">Total:</label>
+                <input type="text" name="total" id="total" class="form-control" readonly>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        {% if request.session.caja_abierta %}
+          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modal">Pagar</button>
+        {% endif %}
       </div>
     </div>
   </div>
-</div>
+  <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Forma de pago</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group row">
+            <div class="col-4">
+              <label for="pagar" class="form-label">Total a pagar</label>
+            </div>
+            <div class="col-8">
+              <input type="text" name="pagar" id="pagar" class="form-control" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-4">
+               <label for="metodo" class="form-label">Metodo de pago</label>
+            </div>
+            <div class="col-8">
+              <select id="metodo" name="metodo" class="form-control">
+                <option value="">Seleccione un metodo de pago</option>
+                <option value="T">Transferencia</option>
+                <option value="E">Efectivo</option>
+                <option value="C">Tarjeta de credito</option>
+                <option value="D">Tarjeta de debito</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-4">
+              <label for="importe" class="form-label">Importe</label>
+            </div>
+            <div class="col-8">
+              <input type="text" name="importe" id="importe" class="form-control">
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-4">
+              <label for="cambio" class="form-label">Cambio</label>
+            </div>
+            <div class="col-8">
+              <input type="text" name="cambio" id="cambio" class="form-control">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Enviar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
 {% endblock contenido %}
 {% block js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
- $(function (){
-   $("#producto").autocomplete({
-    source: "{% url 'autocomplete_producto' %}",
-    minLength: 1,
-    select: function(event, ui){
-      const id = ui.item.id
-      const nombre = ui.item.label
-      const precio = ui.item.precio
-      const existencia = ui.item.existencia
+  $(function () {
+    $("#producto").autocomplete({
+      source: "{% url 'autocomplete_producto' %}",
+      minLength: 1,
+      select: function(event, ui) {
+        const id = ui.item.id;
+        const nombre = ui.item.label;
+        const precio = ui.item.precio;
+        const existencia = ui.item.existencia;
 
-      let producto = {
-        id: id,
-        nombre: nombre,
-        precio: precio,
-        existencia: existencia,
-        cantidad: 1
+        let producto = {
+          id: id,
+          nombre: nombre,
+          precio: precio,
+          existencia: existencia,
+          cantidad: 1
+        };
+
+        agregarProducto(producto);
+        calcularTotal();
       }
-
-      agregarProducto(producto)
-      calcularTotal()
-    }
-  })
- })
-
-$(function () {
-  $("#cliente").autocomplete({
-    source: "{% url 'autocomplete_cliente' %}",
-    minLength: 1,
-    select: function(event, ui){
-      const id = ui.item.id
-      const nombres = ui.item.label
-
-      $("#cliente_id").val(id)
-    }
-  })
-})
-
-  const agregarProducto = (producto)=>{
-    $("#producto_id").val(producto.id)
-    const fila = $('<tr></tr>')
-    fila.append(`<td><input type="number" id="cantidad" value=${producto.cantidad} min=1 max=${producto.existencia}></td>`)
-    fila.append(`<td>${producto.nombre}</td>`)
-    fila.append(`<td id="precio">${producto.precio}</td>`)
-    fila.append(`<td><input id="descuento" value="0" type="number" min="0" max="100"></td>`)
-    fila.append(`<td><button class="btn btn-danger"><i class="fas fa-trash-alt"></i></button></td>`)
-
-    $("#lista").append(fila)
-  }
-  const calcularTotal = ()=>{
-    let subtotal = 0
-    let totaldescuento = 0
-    let total = 0
-    let descuento_producto
-    $("#lista").find('tr').each(function(index, element) {
-      const id = $(element).find('#producto_id').val()
-      const cantidad = $(element).find('#cantidad').val()
-      console.log(cantidad)
-      const precio = $(element).find('#precio').text()
-      console.log(precio)
-      const descuento = $(element).find('#descuento').val()
-      console.log(descuento)
-
-      descuento_producto = parseFloat(descuento/100)
-      if (descuento_producto != 0){
-        subtotal = parseFloat((cantidad*precio)*descuento_producto)
-        total = parseFloat(subtotal-decuento_producto)
-      }else{
-        subtotal = parseFloat(cantidad*precio)
-        total = subtotal
-      }
-      $("#total").val(total.toFixed(2))
-      $("#subtotal").val(subtotal.toFixed(2))
-      $("#descuento").val(descuento_producto)
     });
-  }
+  });
+
+  $(function () {
+    $("#cliente").autocomplete({
+      source: "{% url 'autocomplete_cliente' %}",
+      minLength: 1,
+      select: function(event, ui) {
+        const id = ui.item.id;
+        $("#cliente_id").val(id);
+      }
+    });
+  });
+
+  const agregarProducto = (producto) => {
+    const fila = $('<tr></tr>');
+
+    fila.append(
+      `<td>
+        <input type="number" name="cantidad" class="cantidad" value="${producto.cantidad}" min="1" max="${producto.existencia}">
+      </td>`
+    );
+    fila.append(`<td>${producto.nombre}</td>`);
+    fila.append(`<td class="precio">${producto.precio}</td>`);
+    fila.append(
+      `<td>
+        <input class="descuento" value="0" type="number" min="0" max="100">
+      </td>`
+    );
+    fila.append(
+      `<td>
+        <button class="btn btn-danger eliminar">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </td>`
+    );
+    fila.append(`<input type="hidden" id="producto_id" name="producto_id" value=${producto.id}>`)
+
+    $("#lista").append(fila);
+
+    fila.find('.cantidad, .descuento').on('input', calcularTotal);
+    fila.find('.eliminar').on('click', function () {
+      fila.remove();
+      calcularTotal();
+    });
+  };
+
+  const calcularTotal = () => {
+    let subtotal = 0;
+    let totalDescuento = 0;
+
+    $("#lista").find('tr').each(function () {
+      const cantidad = parseFloat($(this).find('.cantidad').val()) || 0;
+      const precio = parseFloat($(this).find('.precio').text()) || 0;
+      const descuento = parseFloat($(this).find('.descuento').val()) || 0;
+
+      const descuentoPorcentaje = descuento / 100;
+      const subtotalProducto = cantidad * precio;
+      const descuentoProducto = subtotalProducto * descuentoPorcentaje;
+
+      subtotal += subtotalProducto;
+      totalDescuento += descuentoProducto;
+    });
+
+    const total = subtotal - totalDescuento;
+
+    $("#subtotal").val(subtotal.toFixed(2));
+    $("#descuento").val(totalDescuento.toFixed(2));
+    $("#total").val(total.toFixed(2));
+    $("#pagar").val(total.toFixed(2));
+
+    calcularCambio();
+  };
+
+  const calcularCambio = () => {
+    const total = parseFloat($("#pagar").val()) || 0; // Total del modal
+    const importe = parseFloat($("#importe").val()) || 0; // Importe ingresado
+
+    const cambio = importe - total; // Calcular el cambio
+    $("#cambio").val(cambio.toFixed(2)); // Mostrar cambio en el input del modal
+  };
+
+  // Escuchar cambios en el importe para actualizar el cambio automáticamente
+  $("#importe").on("input", calcularCambio);
+
+  $(document).ready(function(){
+    $("#form").submit(function(e) {
+      const csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+      const productos = [];
+        $("#lista tr").each(function() {
+        const producto = {
+          id: $(this).find('input[name="producto_id"]').val(),
+          cantidad: $(this).find('.cantidad').val(),
+          precio: $(this).find('.precio').text(),
+          descuento: $(this).find('.descuento').val()
+        };
+        productos.push(producto);
+      });
+      const datos = {
+        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+        'cliente':{
+          'id': $("#cliente_id").val()
+        },
+        'producto': productos,
+        'importe': $("#importe").val(),
+        'descuento': $("#descuento").val(),
+        'subtotal': $("#subtotal").val(),
+        'total': $("#total").val(),
+        'metodo': $("#metodo").val()
+      }
+      e.preventDefault()
+      $.ajax({
+        url: "{% url 'venta_crear' %}",
+        type: 'POST',
+        data: JSON.stringify(datos),
+        headers: {
+                "X-CSRFToken": csrftoken // Enviar el CSRF token en la cabecera
+        },
+        success: function(response){
+          if (response.success){
+            const baseUrl = "{% url 'ticket' 0 %}".replace("0/", "");
+            const ticketUrl = `${baseUrl}${response.id}`;
+            Swal.fire({
+              icon: "success",
+              title: "Pago realizado",
+              text: "el pago se realizo con exito \n descarga el ticket del siguiente enlace",
+              footer: `<a href="${ticketUrl}" target="_blank">descargar ticket</a>`
+            }).then(()=> {
+              window.location.href = "{% url 'ventas' %}"
+            });
+          }else{
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Algo salio mal",
+            });
+          }
+        },
+        error: function() {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se envio el formulario",
+          });
+        }
+      })
+    });
+  })
 </script>
 {% endblock js %}

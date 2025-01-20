@@ -146,8 +146,3 @@ class AbrirCajaForm(forms.ModelForm):
         fields = ['ma']
         widgets = {'ma': forms.NumberInput()}
 
-class CerrarCajaForm(forms.ModelForm):
-    class Meta:
-        model = MCaja
-        fields = ['mc']
-        widgets = {'mc': forms.NumberInput()}

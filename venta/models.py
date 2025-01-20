@@ -53,6 +53,9 @@ class Usuario(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     imagen = models.ImageField(upload_to='users', null=True, blank=True)
 
+    def __str__(self):
+        return self.nombres
+
     def generos(self):
         g = self.genero
         gc = ''
@@ -82,6 +85,9 @@ class Cliente(models.Model):
     apellidos = models.CharField(max_length=100, null=False, blank=False)
     contacto = models.ForeignKey(Contacto, null=True, on_delete=models.SET_NULL)
     fiscal = models.ForeignKey(Fiscal, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.nombres
 
     def domicilio(self):
         ne = self.fiscal.domicilio.ne
@@ -123,11 +129,43 @@ class MCaja(models.Model):
     ganacia = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
 
 class Venta(models.Model):
+    METODOPAGO = [
+        ('', 'Seleccione un metodo de pago'),
+        ('E', 'Efectivo'),
+        ('T', 'Transferencia'),
+        ('C', 'Tarjeta de credito'),
+        ('D', 'Tarjeta de debito')
+    ]
+
     fecha = models.DateTimeField()
     caja = models.ForeignKey(Caja, null=True, on_delete=models.SET_NULL)
     empleado = models.ForeignKey(Usuario, null=True, on_delete=models.SET_NULL)
     cliente = models.ForeignKey(Cliente, null=True, on_delete=models.SET_NULL)
     total = models.DecimalField(max_digits=11, decimal_places=2, null=False, blank=False)
     total_descuento = models.DecimalField(max_digits=11, decimal_places=2, null=False, blank=False)
-    importe = models.DecimalField(max_digits=11, decimal_places=2, null=False, blank=False)
-    cambio = models.DecimalField(max_digits=11, decimal_places=2, null=False, blank=False)
+    importe = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
+    cambio = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
+    mp = models.CharField(max_length=1, null=True, blank=True, choices=METODOPAGO, verbose_name='Metodo de pago')
+
+    def metodo(self):
+        mp = self.mp
+        pago=''
+
+        if mp=='E':
+            pago='Efectivo'
+        elif mp=='T':
+            pago='Transferencia'
+        elif mp=='C':
+            pago='Tarjeta de credito'
+        elif mp=='D':
+            pago=='Tarjeta de debito'
+
+        return pago
+
+class DetalleVenta(models.Model):
+    venta = models.ForeignKey(Venta, null=True, on_delete=models.SET_NULL)
+    producto = models.ForeignKey(Producto, null=True, on_delete=models.SET_NULL)
+    cantidad = models.IntegerField(null=False, blank=False)
+    importe = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
+    descuento = models.DecimalField(max_digits=11, decimal_places=2, null=True, blank=True)
+    total = models.DecimalField(max_digits=11, decimal_places=2, null=False, blank=False)

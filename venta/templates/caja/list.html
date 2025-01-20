@@ -46,9 +46,12 @@ Marcas
                       <i class="fas fa-box-open"></i>
                     </a>
                     {% elif request.session.caja_abierta and request.session.caja_abierta == c.id %}
-                    <a href="{% url 'caja_cerrar' %}" class="btn btn-danger">
-                      <i class="fas fa-box"></i>
-                    </a>
+                    <form action="{% url 'caja_cerrar' c.id %}" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-box"></i>
+                      </button>
+                    </form>
                     {% endif %}
                   {% endif %}
                 </div>
@@ -92,7 +95,7 @@ Marcas
     $("#lista").DataTable({
       "responsive": true, "lengthChange": false, "autoWidth": false,
       language: {
-            url: "//cdn.datatables.net/plug-ins/2.2.0/i18n/es-MX.json"
+            url: "https://cdn.datatables.net/plug-ins/2.2.0/i18n/es-MX.json"
       },
     })
   })

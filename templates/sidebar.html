@@ -40,7 +40,7 @@
           {% if usuario.rol == 1 %}
           <li class="nav-item">
             <a href="{% url 'negocios' %}" class="nav-link">
-              <i class="nav-icon fas fa-building"></i>
+              <i class="nav-icon fas fa-briefcase"></i>
               <p>
                 Negocios
               </p>
@@ -111,10 +111,20 @@
             <a href="{% url 'ventas' %}" class="nav-link">
               <i class="nav-icon fa fa-store-alt"></i>
               <p>
-                Detalle venta
+                Ventas
               </p>
             </a>
           </li>
+          {% if usuario.rol == 1 %}
+           <li class="nav-item">
+            <a href="{% url 'reporte' %}" class="nav-link">
+              <i class="nav-icon fa fa-clipboard"></i>
+              <p>
+                Reportes
+              </p>
+            </a>
+          </li>
+          {% endif %}
         </ul>
         {% endwith %}
       </nav>
