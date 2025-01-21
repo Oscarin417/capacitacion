@@ -602,6 +602,10 @@ def usuario_destroy(request, pk):
             return redirect('usuarios')
 
 def singing(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+
     if request.method == 'POST':
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
         login(request, user)
@@ -616,6 +620,9 @@ def signout(request):
     return redirect('login')
 
 def singup(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
     uf = UserForm(request.POST or None)
     rf = RegistroForm(request.POST or None)
     context = {
